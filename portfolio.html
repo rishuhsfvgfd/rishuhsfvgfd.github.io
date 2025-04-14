@@ -1089,6 +1089,7 @@
             <a href="#achievements" class="nav-link">Achievements</a>
             <a href="#projects" class="nav-link">Skills</a>
             <a href="#contact" class="nav-link">Contact</a>
+            <a href="https://rishuhsfvgfd.github.io/text-analyser/analyser.html" class="nav-link">Text Analyser</a>
         </div>
     </nav>
 
@@ -1477,6 +1478,217 @@
         window.addEventListener('load', () => {
             window.dispatchEvent(new Event('scroll'));
         });
+        // Event Tracking System for Personal Website
+// This script captures all click events and page views across HTML tags and CSS objects
+
+// Main event tracking function
+function trackUserInteractions() {
+  // Time when the page is loaded (first view)
+  const loadTimestamp = new Date().toISOString();
+  console.log(`${loadTimestamp}, view, page_load, URL: ${window.location.pathname}`);
+
+  // Track all clicks on the document
+  document.addEventListener('click', function(event) {
+    const timestamp = new Date().toISOString();
+    const target = event.target;
+    
+    // Determine the type of element clicked
+    let elementType = 'unknown';
+    let elementInfo = '';
+    
+    // Identify the element type
+    if (target.tagName === 'A') {
+      elementType = 'link';
+      elementInfo = target.textContent || target.href;
+      if (target.classList.contains('nav-link')) {
+        elementType = 'navigation_link';
+        elementInfo = target.textContent;
+      } else if (target.classList.contains('cta-button')) {
+        elementType = 'call_to_action_button';
+        elementInfo = target.textContent;
+      } else if (target.classList.contains('project-link')) {
+        elementType = 'project_link';
+        elementInfo = `Project: ${target.closest('.project-card').querySelector('.project-title').textContent}`;
+      } else if (target.classList.contains('cv-button')) {
+        elementType = 'cv_download_button';
+        elementInfo = 'Download CV';
+      } else if (target.classList.contains('social-link')) {
+        elementType = 'social_media_link';
+        elementInfo = target.textContent;
+      }
+    } else if (target.tagName === 'BUTTON') {
+      elementType = 'button';
+      elementInfo = target.textContent || 'unnamed button';
+      if (target.classList.contains('submit-button')) {
+        elementType = 'contact_form_submit';
+      }
+    } else if (target.tagName === 'IMG') {
+      elementType = 'image';
+      elementInfo = target.alt || 'unnamed image';
+      if (target.classList.contains('profile-photo')) {
+        elementType = 'profile_photo';
+      } else if (target.closest('.gallery-item')) {
+        elementType = 'gallery_image';
+        const caption = target.closest('.gallery-item').querySelector('.image-caption');
+        elementInfo = caption ? caption.textContent : 'Gallery image';
+      }
+    } else if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+      elementType = target.tagName.toLowerCase();
+      elementInfo = target.placeholder || target.name || 'form field';
+    } else if (target.classList.contains('logo')) {
+      elementType = 'logo';
+      elementInfo = target.textContent;
+    } else if (target.classList.contains('scroll-to-top')) {
+      elementType = 'scroll_to_top_button';
+    } else if (target.tagName === 'DIV') {
+      if (target.classList.contains('project-card')) {
+        elementType = 'project_card';
+        elementInfo = target.querySelector('.project-title') ? 
+                      target.querySelector('.project-title').textContent : 
+                      'unnamed project';
+      } else if (target.classList.contains('achievement-card')) {
+        elementType = 'achievement_card';
+        elementInfo = target.querySelector('.achievement-title') ? 
+                      target.querySelector('.achievement-title').textContent : 
+                      'unnamed achievement';
+      } else if (target.classList.contains('stat-item')) {
+        elementType = 'stat_item';
+        elementInfo = target.querySelector('.stat-label') ? 
+                      target.querySelector('.stat-label').textContent : 
+                      'unnamed stat';
+      } else {
+        elementType = 'div';
+        elementInfo = target.className || 'unnamed div';
+      }
+    } else {
+      // For any other element types
+      elementType = target.tagName.toLowerCase();
+      elementInfo = target.textContent ? 
+                    (target.textContent.length > 20 ? 
+                     target.textContent.substring(0, 20) + '...' : 
+                     target.textContent) : 
+                    'unnamed element';
+    }
+    
+    // Log the interaction
+    console.log(`${timestamp}, click, ${elementType}, ${elementInfo}`);
+  });
+  
+  // Track views using Intersection Observer for key elements
+  const observeElements = document.querySelectorAll('section, .project-card, .achievement-card, .gallery-item, .about-text, .profile-photo, .birthplace-text');
+  
+  const viewObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const timestamp = new Date().toISOString();
+        const target = entry.target;
+        
+        // Determine what kind of element is being viewed
+        let elementType = 'section';
+        let elementInfo = '';
+        
+        if (target.id) {
+          elementType = `section_${target.id}`;
+          elementInfo = `Section: ${target.id}`;
+        } else if (target.classList.contains('project-card')) {
+          elementType = 'project_card';
+          elementInfo = target.querySelector('.project-title') ? 
+                        target.querySelector('.project-title').textContent : 
+                        'unnamed project';
+        } else if (target.classList.contains('achievement-card')) {
+          elementType = 'achievement_card';
+          elementInfo = target.querySelector('.achievement-title') ? 
+                        target.querySelector('.achievement-title').textContent : 
+                        'unnamed achievement';
+        } else if (target.classList.contains('gallery-item')) {
+          elementType = 'gallery_image';
+          const caption = target.querySelector('.image-caption');
+          elementInfo = caption ? caption.textContent : 'Gallery image';
+        } else if (target.classList.contains('about-text')) {
+          elementType = 'about_text';
+          elementInfo = 'About section text';
+        } else if (target.classList.contains('profile-photo')) {
+          elementType = 'profile_photo';
+          elementInfo = 'Profile picture';
+        } else if (target.classList.contains('birthplace-text')) {
+          elementType = 'birthplace_text';
+          elementInfo = 'Birthplace information';
+        }
+        
+        // Log the view
+        console.log(`${timestamp}, view, ${elementType}, ${elementInfo}`);
+        
+        // Unobserve after first view to prevent multiple logs for the same element
+        viewObserver.unobserve(target);
+      }
+    });
+  }, {
+    threshold: 0.5, // Element is considered "viewed" when 50% visible
+    rootMargin: '0px'
+  });
+  
+  // Start observing all the selected elements
+  observeElements.forEach(element => {
+    viewObserver.observe(element);
+  });
+  
+  // Track scroll depth percentage
+  let maxScrollDepth = 0;
+  window.addEventListener('scroll', function() {
+    // Calculate current scroll depth percentage
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrollPercentage = Math.round((scrollTop / scrollHeight) * 100);
+    
+    // Log only when reaching new depth milestones (multiples of 25%)
+    if (scrollPercentage >= 25 && maxScrollDepth < 25 && scrollPercentage < 50) {
+      maxScrollDepth = 25;
+      console.log(`${new Date().toISOString()}, view, scroll_depth, 25% of page`);
+    } else if (scrollPercentage >= 50 && maxScrollDepth < 50 && scrollPercentage < 75) {
+      maxScrollDepth = 50;
+      console.log(`${new Date().toISOString()}, view, scroll_depth, 50% of page`);
+    } else if (scrollPercentage >= 75 && maxScrollDepth < 75 && scrollPercentage < 100) {
+      maxScrollDepth = 75;
+      console.log(`${new Date().toISOString()}, view, scroll_depth, 75% of page`);
+    } else if (scrollPercentage >= 100 && maxScrollDepth < 100) {
+      maxScrollDepth = 100;
+      console.log(`${new Date().toISOString()}, view, scroll_depth, 100% of page (bottom reached)`);
+    }
+  });
+  
+  // Track form field interactions
+  const formElements = document.querySelectorAll('input, textarea');
+  formElements.forEach(element => {
+    // Track when users start typing in form fields
+    element.addEventListener('focus', function() {
+      const timestamp = new Date().toISOString();
+      console.log(`${timestamp}, view, form_field_focus, ${element.placeholder || element.name || 'form field'}`);
+    });
+    
+    // Track form field completion
+    element.addEventListener('change', function() {
+      const timestamp = new Date().toISOString();
+      const isCompleted = element.value.trim().length > 0;
+      console.log(`${timestamp}, interaction, form_field_${isCompleted ? 'completed' : 'changed'}, ${element.placeholder || element.name || 'form field'}`);
+    });
+  });
+  
+  // Additional tracking for document visibility changes
+  document.addEventListener('visibilitychange', function() {
+    const timestamp = new Date().toISOString();
+    if (document.visibilityState === 'hidden') {
+      console.log(`${timestamp}, view, page_exit, User left the page`);
+    } else {
+      console.log(`${timestamp}, view, page_return, User returned to the page`);
+    }
+  });
+}
+
+// Initialize tracking system when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+  trackUserInteractions();
+  console.log('Event tracking system initialized');
+});
     </script>
 </body>
 </html>

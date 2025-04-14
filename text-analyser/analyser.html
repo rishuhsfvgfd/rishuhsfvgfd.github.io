@@ -248,8 +248,12 @@
         // Basic text statistics
         const letterCount = (text.match(/[a-zA-Z]/g) || []).length;
         const wordCount = text.split(/\s+/).filter(word => word.length > 0).length;
-        const spaceCount = (text.match(/\s/g) || []).length;
+        
+        // Count newlines first
         const newlineCount = (text.match(/\n/g) || []).length;
+        
+        // Count spaces (excluding newlines)
+        const spaceCount = (text.match(/ /g) || []).length; // Changed from \s to space character only
         
         // Count special symbols (all non-alphanumeric, non-whitespace characters)
         const specialCount = (text.match(/[^\w\s]/g) || []).length;
